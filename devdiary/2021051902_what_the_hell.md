@@ -55,11 +55,11 @@ Coming back to why I want dialogue. There exists this idea of “cut ups”. If 
 
 Hopefully, that explains my use case. There are other use cases of course.
 
-Maybe you are doing the cut-up method of writing song lyrics and you want to find interesting phrases or ideas for writing lyrics.
+* Maybe you are doing the cut-up method of writing song lyrics and you want to find interesting phrases or ideas for writing lyrics.
 
-Maybe you are a club, and you want some visuals to play on the screens around your club while the music is being played.
+* Maybe you are a club, and you want some visuals to play on the screens around your club while the music is being played.
 
-The idea is not limited to TV/Movies. Maybe you have a collection of music videos and you want to create a spliced horror show of video and audio?
+* The idea is not limited to TV/Movies. Maybe you have a collection of music videos and you want to create a spliced horror show of video and audio?
 
 Next: lets write some code
 
