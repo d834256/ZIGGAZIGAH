@@ -1,3 +1,3 @@
 # ZIGGAZIGAH
-cut ups for the video age
+Cut ups for the video age.
 
