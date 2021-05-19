@@ -1,4 +1,6 @@
-# What the hell is this anyway? Thursday 20th August 2021.
+# Thursday 20th August 2021.
+
+## What the hell is this anyway? 
 
 When I am making music and trying to get out of the eternal damnation of being trapped in 2 bar loops, I think about performance. One of the done things in certain circles of live music performance is to have visuals made up of clips from tv shows and movies playing in the background while you are standing there trying to make standing behind a laptop twiddling knobs look cool. I do not have hours to spend hunting down clips that look cool and/or interesting. 
 
