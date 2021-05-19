@@ -1,5 +1,4 @@
-# Wednesday 19th August 2021.
-# Introductions.
+# Introductions, Wednesday 19th August 2021
 
 Introductions, as if any were needed, are hard. I am tormented with an idea for a project which is burning a hole in my concentration so large you could drive a truck through it. The need to document my madness is strong. So, buckle up.
 
