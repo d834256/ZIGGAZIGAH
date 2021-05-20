@@ -72,10 +72,11 @@ if [ ! -d "./tmp" ]; then
     mkdir tmp
 fi
 
-echo "Mode: ${mode}"
+# make a note of our start time
+startdate=$(date +%s)
 
 if [ "${mode}" == "random" ]; then
-    echo "${sublines} lines of random subtitles."
+    echo "Mode: ${mode} Using ${sublines} lines of random subtitles."
 
     sql="SELECT id from words order by RANDOM() LIMIT ${sublines};"
     results=$(sqlite3 ${database} "${sql}")
@@ -95,10 +96,15 @@ if [ "${mode}" == "random" ]; then
     echo "Combining all the clips to ./tmp/${filename_prefix}_final.mp4"
     ffmpeg -loglevel 0 -f concat -safe 0 -i ./tmp/${filename_prefix}.txt -codec copy ./tmp/${filename_prefix}_final.mp4
 
+    testdur=$(ffprobe -v error -show_format -show_streams -i "./tmp/${filename_prefix}_final.mp4"|grep duration=|grep -v "N/A"|uniq|awk -F= '{print $2}')
+    testdur=$(echo ${testdur}|awk -F. '{print $1}')
+
+    #echo "Output video file is ${testdur} seconds long."
+
 fi
 
 if [ "${mode}" == "keywords" ]; then
-    echo "Using keywords: ${words}"
+    echo "Mode: ${mode} Using keywords: ${words}"
 
     for word in ${words}; do
         result=$(search_for_word "${word}")
@@ -141,7 +147,29 @@ if [ "${mode}" == "keywords" ]; then
         echo ""
         exit 1
     fi 
+
+    testdur=$(ffprobe -v error -show_format -show_streams -i "./tmp/${filename_prefix}_final.mp4"|grep duration=|grep -v "N/A"|uniq|awk -F= '{print $2}')
+    testdur=$(echo ${testdur}|awk -F. '{print $1}')
+
+    #echo "Output video file is ${testdur} seconds long."
 fi
+
+
+echo "Output video file is ${testdur} seconds long."
+
+
+# make a note of our end time
+enddate=$(date +%s)
+
+
+#
+# https://stackoverflow.com/questions/42149301/how-to-translate-seconds-to-minutes-seconds-in-bash
+# 
+total_time=$((enddate-startdate))
+minutes=$((total_time / 60))
+seconds=$((total_time % 60))
+echo "Script took $minutes minutes and $seconds seconds to complete."
+
 
 #
 # TODO -
