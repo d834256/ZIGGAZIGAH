@@ -33,6 +33,8 @@ I've added ffprobe to this list recently. It's available from the same place as 
 
 Fair warning, this script is very alpha. Most of the working files use cwd, or ./tmp (note the ./) to store files.
 
+Download the files, chmod +x the .sh files.
+
 First off create a text file. On each line of the file you can place either a directory or a full path to a media file. It doesn't matter.
 
 mymovies.txt :
