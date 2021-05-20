@@ -20,11 +20,14 @@ Off the top of my head.
 ```
 sqlite
 ffmpeg
+ffprobe
 ```
 
 I tested this script on CentOS 7, but I tried to make it generic enough to run anywhere. One of the reasons why it's not in Perl or Python.
 
 There was some stuff in the docs for ffmpeg's handling of burning in subtitles that suggested it needs to be compiled with certain options. I think I grabbed a pre-built binary from ffmpeg rather than using the CentOS packaged versions so if your subtitles aren't appearing this is probably why.
+
+I've added ffprobe to this list recently. It's available from the same place as ffmpeg. 
 
 ### How to get started
 
