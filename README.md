@@ -132,6 +132,15 @@ Script took 0 minutes and 33 seconds to complete.
 
 There's a variable called TOLERANCE in the make_video.sh which determines how many frames either side of the chosen point in time the script will extract. This is to stop the video content strobing you into a seizure. If however you like to live dangerously you can change that TOLERANCE value which should give the audio a more constant disjointed feel.
 
+### The script complains it can't find ffmpeg/ffprobe !
+
+These need to be in your PATH. For example, download or install ffmpeg or ffprobe to the same directory you put the scripts and in BASH you'd do something like -
+
+```
+PATH=${PATH}:.
+export PATH
+```
+
 ### How do I get rid of the subtitles in the movie clips?
 
 You can edit the make_video.sh script and change the SUBTTILES variable to 0 to turn that off.
