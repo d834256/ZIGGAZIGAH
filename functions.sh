@@ -258,7 +258,7 @@ function extract_clip () {
 
             ((timecounter+=1))
         fi
-        echo "{$start_timecode} ${words}"
+        echo "${starttime} ${words}"
     done
     
     # sometimes if there time window is too low the extract files, so lets add 
