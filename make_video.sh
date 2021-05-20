@@ -20,7 +20,7 @@ SUBTITLES="1"
 # on the eyes you can add a tolerance which basically adds as many extra
 # subtitle entries as you like to make the clips longer.
 #
-TOLERANCE="3"
+TOLERANCE="0"
 
 #
 # change this if you want your db to live somewhere else
@@ -65,6 +65,11 @@ if [ "${usage_warning}" == "1" ]; then
     echo "Usage : ${scriptname} random [number of subtitle lines]"
     echo ""
     exit 1
+fi
+
+if [ ! -d "./tmp" ]; then
+    echo "Creating ./tmp"
+    mkdir tmp
 fi
 
 echo "Mode: ${mode}"
@@ -125,7 +130,17 @@ if [ "${mode}" == "keywords" ]; then
 
     echo "Combining all the clips to ./tmp/${filename_prefix}_final.mp4"
     ffmpeg -loglevel 0 -f concat -safe 0 -i ./tmp/${filename_prefix}.txt -codec copy ./tmp/${filename_prefix}_final.mp4
-
+    errorcode="${?}"
+    if [ "${errorcode}" == "1" ]; then
+        echo ""
+        echo "ERROR: ffmpeg combined failed."
+        echo ""
+        echo "ffmpeg command line was :"
+        echo ""
+        echo "ffmpeg -loglevel 0 -f concat -safe 0 -i ./tmp/${filename_prefix}.txt -codec copy ./tmp/${filename_prefix}_final.mp4"
+        echo ""
+        exit 1
+    fi 
 fi
 
 #

@@ -261,12 +261,116 @@ function extract_clip () {
         echo "{$start_timecode} ${words}"
     done
     
-    echo "Extracting to filename ${1}"
+    #echo "Extracting to filename ${1}"
+
+    # sometimes if there time window is too low the extract files, so lets add 
+    # some debugging to see if we find this is the case
+    # super hokey as this is testing a bug right now
+    #echo "Maxtimecode : ${max_timecode}"
+    test=$(subtracttimes "${min_timecode}" "${max_timecode}")
+    #echo "Timecode length: ${test}"
+    testdur=$(ffprobe -v error -show_format -show_streams -i "${filename}"|grep duration=|grep -v "N/A"|uniq|awk -F= '{print $2}')
+    testdur=$(echo ${testdur}|awk -F. '{print $1}')
+
+    testmaxtimecode=$(codes2seconds "${max_timecode}")
+    testmaxtimecode=$(echo ${testmaxtimecode}|awk -F. '{print $1}')
+
+    #echo "max_timecode ${testmaxtimecode} VS testdur ${testdur}"
+
+
+    if [ "${testmaxtimecode}" -gt "${testdur}" ]; then
+        echo "*** WARNING: timecode exceeds length of video source       ***"
+        echo "*** this usually means your subtitles file isn't correct   ***"
+        echo "*** working around by randomly picking a time window       ***"
+        echo "*** within the real duration and then reuse the bogus subs ***"
+        echo "*** to get past this error, sorry!                         ***"
+
+        #echo $((${min_timecode} + $RANDOM % ${max_timecode}))
+
+        min_timecode=$(codes2seconds "${min_timecode}")
+        max_timecode=$(codes2seconds "${max_timecode}")
+        min_timecode=$(echo ${min_timecode}|awk -F. '{print $1}')
+        max_timecode=$(echo ${max_timecode}|awk -F. '{print $1}')
+        #echo "min timecode ${min_timecode}"
+        #echo "max timecode ${max_timecode}"
+
+        min_milli=$((1 + $RANDOM % 100))
+        min_milli=$(printf "%03d\n" ${min_milli})
+        max_milli=$((1 + $RANDOM % 100))
+        max_milli=$(printf "%03d\n" ${max_milli})
+
+        min_timecode=$((30 + $RANDOM % ${testdur}))
+        max_timecode=$((${min_timecode} + 2))
+
+        max_timecode="${max_timecode}.${max_milli}"
+        min_timecode="${min_timecode}.${min_milli}"
+
+        max_timecode=$(seconds2codes "${max_timecode}")
+        min_timecode=$(seconds2codes "${min_timecode}")
+
+        #echo "NEW max_timecode ${max_timecode}"
+        #echo "NEW min_timecode ${min_timecode}"
+
+        #exit 1
+    fi
+
+    #if [ "${max_timecode}" ]
+
+    #echo ffmpeg -ss "${min_timecode}" -to "${max_timecode}" -i "${filename}" -c:v libx264 -crf 30 ./tmp/${1}.mp4
+
+    #testbframe=0
+    #bfilename=""
+
+    #testbframe=$(ffmpeg -y -hide_banner -v info -i "${filename}" -ss 0 -t 1 -an -c:v mpeg4 -f null /dev/null 2>&1 | grep -c mpeg4_unpack_bframes)
+    #echo "bframe test: ${testbframe}"
+    #if [ "${testbframe}" != "0" ]; then
+    #    echo "*** WARNING: bframes detected, applying fix to ./tmp/bframes.avi ***"
+    #    ffmpeg -i "${filename}" -codec copy -bsf:v mpeg4_unpack_bframes ./tmp/bframes.avi
+    #    source_filename="./tmp/bframes.avi"
+    #else
+    #    source_filename="${filename}"
+    #fi
+ 
+
+
+    #echo ffmpeg -ss "${min_timecode}" -to "${max_timecode}" -i "${filename}" -c:v libx264 -crf 30 ./tmp/${1}.mp4
 
     ffmpeg -loglevel 0 -ss "${min_timecode}" -to "${max_timecode}" -i "${filename}" -c:v libx264 -crf 30 ./tmp/${1}.mp4
+    errorcode="${?}"
+    if [ "${errorcode}" == "1" ]; then
+        echo "*** WARNING: bframes detected, applying fix to ./tmp/bframes.avi ***"
+        ffmpeg -i "${filename}" -codec copy -bsf:v mpeg4_unpack_bframes ./tmp/bframes.avi
+        ffmpeg -loglevel 0 -ss "${min_timecode}" -to "${max_timecode}" -i "./tmp/bframes.avi" -c:v libx264 -crf 30 ./tmp/${1}.mp4
+        rm ./tmp/bframes.avi
+    fi
+
+    #    echo ""
+    #    echo "ERROR: ffmpeg extract failed."
+    #    echo ""
+    #    echo "ffmpeg command line was : "
+    #    echo ""
+    #    echo "ffmpeg -loglevel 0 -ss "${min_timecode}" -to "${max_timecode}" -i "${source_filename}" -c:v libx264 -crf 30 ./tmp/${1}.mp4"
+    #    echo ""
+    #    exit 1
+    #fi 
+
+    #if [ "${testbframe}" != "0" ]; then
+    #    rm ./tmp/bframes.avi
+    #fi
 
     if [ "${3}" == "1" ]; then
         ffmpeg -loglevel 0 -i "./tmp/${1}.mp4" -vf subtitles="./tmp/${1}.srt" ./tmp/out.mp4
+        errorcode="${?}"
+        if [ "${errorcode}" == "1" ]; then
+            echo ""
+            echo "ERROR: ffmpeg subtitle burn failed."
+            echo ""
+            echo "ffmpeg command line was : "
+            echo ""
+            echo "ffmpeg -loglevel 0 -i \"./tmp/${1}.mp4\" -vf subtitles=\"./tmp/${1}.srt\" ./tmp/out.mp4"            
+            echo ""
+            exit 1
+        fi 
         rm ./tmp/${1}.mp4
         mv ./tmp/out.mp4 ./tmp/${1}.mp4
         rm ./tmp/${1}.srt
